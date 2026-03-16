@@ -8,7 +8,7 @@ export const getStock = (ticker: string) =>
 
 export const searchStocks = (keyword: string) =>
   client
-    .get<ApiResponse<StockResponse[]>>('/stocks/search', {
+    .get<ApiResponse<StockResponse[]>>('/stocks', {
       params: { keyword },
     })
     .then((r) => r.data)

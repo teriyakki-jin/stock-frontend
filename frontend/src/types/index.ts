@@ -40,6 +40,7 @@ export interface OrderResponse {
 }
 
 export interface HoldingResponse {
+  holdingId: number
   ticker: string
   stockName: string
   quantity: number

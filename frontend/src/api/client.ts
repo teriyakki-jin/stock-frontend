@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { useAuthStore } from '../store/authStore'
 
 const client = axios.create({
@@ -16,10 +16,15 @@ client.interceptors.request.use((config) => {
 
 client.interceptors.response.use(
   (res) => res,
-  (error) => {
+  (error: AxiosError<{ message?: string }>) => {
     if (error.response?.status === 401) {
       useAuthStore.getState().logout()
       window.location.href = '/auth'
+    }
+    // 서버 에러 메시지를 Error 객체 message로 정규화
+    const serverMessage = error.response?.data?.message
+    if (serverMessage) {
+      return Promise.reject(new Error(serverMessage))
     }
     return Promise.reject(error)
   }
