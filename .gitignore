@@ -1,10 +1,19 @@
 # Dependencies
 node_modules/
+**/node_modules/
 
 # Build output
 dist/
+**/dist/
+build/
+**/build/
 
-# Environment variables
+# Gradle
+.gradle/
+**/.gradle/
+*.class
+
+# Environment
 .env
 .env.local
 .env.*.local
@@ -21,12 +30,10 @@ Thumbs.db
 
 # Logs
 *.log
-npm-debug.log*
-pnpm-debug.log*
 
-# Cache
-.cache/
-.parcel-cache/
+# Vite
+.vite/
+**/.vite/
 
 # Claude
 .claude/
