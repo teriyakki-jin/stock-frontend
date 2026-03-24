@@ -1,3 +1,11 @@
+export interface StockPriceData {
+  price: number
+  changePercent: number
+  volume: number | null
+  dayHigh: number | null
+  dayLow: number | null
+}
+
 export interface ApiResponse<T> {
   success: boolean
   message: string
