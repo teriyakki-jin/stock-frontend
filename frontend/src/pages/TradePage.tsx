@@ -152,37 +152,50 @@ export default function TradePage() {
                 </div>
               </div>
 
-              <div className="px-5 py-5 grid grid-cols-3 gap-6">
-                <div className="col-span-2">
-                  <p className="label-tag mb-2">CURRENT PRICE</p>
-                  <p className="font-mono text-4xl font-bold text-terminal-text">
-                    ₩{fmt(stock.currentPrice)}
-                  </p>
-                  <div className="mt-2 flex items-center gap-2">
-                    <span
-                      className={`font-mono text-sm font-semibold ${
-                        changePositive ? 'price-up' : 'price-down'
-                      }`}
-                    >
-                      {changePositive ? '▲' : '▼'}{' '}
-                      {Math.abs(stock.changeRate).toFixed(2)}%
-                    </span>
-                    <span className="font-mono text-xs text-terminal-muted">
-                      vs BASE ₩{fmt(stock.basePrice)}
-                    </span>
+              <div className="px-5 py-5 space-y-4">
+                {/* Price + change */}
+                <div className="flex items-end justify-between">
+                  <div>
+                    <p className="label-tag mb-1">CURRENT PRICE</p>
+                    <p className="font-mono text-4xl font-bold text-terminal-text">
+                      ₩{fmt(stock.currentPrice)}
+                    </p>
+                    <div className="mt-2 flex items-center gap-2">
+                      <span
+                        className={`font-mono text-sm font-semibold ${
+                          changePositive ? 'price-up' : 'price-down'
+                        }`}
+                      >
+                        {changePositive ? '▲' : '▼'}{' '}
+                        {Math.abs(stock.changeRate).toFixed(2)}%
+                      </span>
+                      <span className="font-mono text-xs text-terminal-muted">전일 대비</span>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="label-tag mb-0.5">MARKET</p>
+                    <p className="font-mono text-sm text-terminal-dim">{stock.market}</p>
                   </div>
                 </div>
-                <div className="space-y-3">
+
+                {/* Day stats */}
+                <div className="grid grid-cols-3 gap-3 pt-2 border-t border-terminal-border">
                   <div>
-                    <p className="label-tag mb-0.5">BASE PRICE</p>
-                    <p className="font-mono text-sm text-terminal-dim">
-                      ₩{fmt(stock.basePrice)}
+                    <p className="label-tag mb-0.5">HIGH</p>
+                    <p className={`font-mono text-sm ${stock.dayHigh ? 'text-terminal-red' : 'text-terminal-muted'}`}>
+                      {stock.dayHigh ? `₩${fmt(stock.dayHigh)}` : '—'}
                     </p>
                   </div>
                   <div>
-                    <p className="label-tag mb-0.5">MARKET</p>
-                    <p className="font-mono text-sm text-terminal-text">
-                      {stock.market}
+                    <p className="label-tag mb-0.5">LOW</p>
+                    <p className={`font-mono text-sm ${stock.dayLow ? 'price-up' : 'text-terminal-muted'}`}>
+                      {stock.dayLow ? `₩${fmt(stock.dayLow)}` : '—'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="label-tag mb-0.5">VOLUME</p>
+                    <p className="font-mono text-sm text-terminal-dim">
+                      {stock.volume != null ? `${(stock.volume / 1000).toFixed(0)}K` : '—'}
                     </p>
                   </div>
                 </div>

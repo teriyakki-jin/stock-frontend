@@ -25,6 +25,9 @@ export interface StockResponse {
   basePrice: number
   currentPrice: number
   changeRate: number
+  volume: number | null    // 거래량 (null = 시세 미수신)
+  dayHigh: number | null   // 당일 고가
+  dayLow: number | null    // 당일 저가
 }
 
 export interface OrderResponse {
