@@ -42,11 +42,13 @@ export interface OrderResponse {
   orderId: number
   ticker: string
   stockName: string
-  orderType: 'BUY' | 'SELL'
+  orderType: 'BUY' | 'SELL' | 'BUY_LIMIT' | 'SELL_LIMIT'
   status: 'PENDING' | 'EXECUTED' | 'CANCELLED'
   quantity: number
   unitPrice: number
   totalAmount: number
+  limitPrice: number | null
+  remainingQty: number | null
   executedAt: string
 }
 
