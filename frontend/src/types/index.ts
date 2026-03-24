@@ -63,6 +63,26 @@ export interface HoldingResponse {
   profitRate: number
 }
 
+export interface HoldingDetail {
+  holdingId: number
+  ticker: string
+  stockName: string
+  quantity: number
+  avgPrice: number
+  currentPrice: number
+  evaluatedAmount: number
+  profitRate: number
+  allocationPct: number
+}
+
+export interface PortfolioSummaryResponse {
+  totalInvested: number
+  currentValue: number
+  totalPnl: number
+  pnlRate: number
+  holdings: HoldingDetail[]
+}
+
 export interface PageResponse<T> {
   content: T[]
   totalElements: number
