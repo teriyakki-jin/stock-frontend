@@ -51,12 +51,12 @@ export default function Navbar() {
         </Link>
 
         {/* Nav links */}
-        {isAuthenticated && (
-          <nav className="flex items-center gap-1">
-            {navLink('/dashboard', 'OVERVIEW')}
-            {navLink('/trade', 'TRADE')}
-          </nav>
-        )}
+        <nav className="flex items-center gap-1">
+          {isAuthenticated && navLink('/dashboard', 'OVERVIEW')}
+          {isAuthenticated && navLink('/trade', 'TRADE')}
+          {navLink('/ranking', 'RANKING')}
+          {isAuthenticated && navLink('/profile', 'PROFILE')}
+        </nav>
 
         {/* Right side */}
         <div className="flex items-center gap-3">

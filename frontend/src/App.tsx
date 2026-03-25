@@ -2,8 +2,11 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuthStore } from './store/authStore'
 import Layout from './components/Layout'
 import AuthPage from './pages/AuthPage'
+import AuthCallbackPage from './pages/AuthCallbackPage'
 import DashboardPage from './pages/DashboardPage'
 import TradePage from './pages/TradePage'
+import RankingPage from './pages/RankingPage'
+import ProfilePage from './pages/ProfilePage'
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthStore()
@@ -14,13 +17,13 @@ export default function App() {
   return (
     <Routes>
       <Route path="/auth" element={<AuthPage />} />
+      <Route path="/auth/callback" element={<AuthCallbackPage />} />
+
       <Route
         path="/dashboard"
         element={
           <PrivateRoute>
-            <Layout>
-              <DashboardPage />
-            </Layout>
+            <Layout><DashboardPage /></Layout>
           </PrivateRoute>
         }
       />
@@ -28,12 +31,25 @@ export default function App() {
         path="/trade"
         element={
           <PrivateRoute>
-            <Layout>
-              <TradePage />
-            </Layout>
+            <Layout><TradePage /></Layout>
           </PrivateRoute>
         }
       />
+      <Route
+        path="/ranking"
+        element={
+          <Layout><RankingPage /></Layout>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <PrivateRoute>
+            <Layout><ProfilePage /></Layout>
+          </PrivateRoute>
+        }
+      />
+
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route path="*" element={<Navigate to="/auth" replace />} />
     </Routes>

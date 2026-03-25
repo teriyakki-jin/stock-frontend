@@ -127,3 +127,35 @@ export interface SimStatus {
   mode: 'LIVE' | 'REALTIME' | 'SIM'
   interval: number
 }
+
+// ─── Ranking ──────────────────────────────────────────────
+
+export type RankingPeriod = 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'ALL_TIME'
+
+export interface RankingEntry {
+  rank: number
+  nickname: string
+  avatarUrl: string | null
+  pnlRate: number
+  totalPnl: number
+  totalTrades: number
+}
+
+export interface MyRanking {
+  rank: number
+  pnlRate: number
+  totalPnl: number
+  totalTrades: number
+  period: RankingPeriod
+  snapshotDate: string
+}
+
+// ─── Profile ──────────────────────────────────────────────
+
+export interface Profile {
+  id: string
+  localMemberId: number
+  nickname: string
+  avatarUrl: string | null
+  bio: string | null
+}

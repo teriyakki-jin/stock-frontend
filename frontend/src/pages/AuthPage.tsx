@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
 import { login, signUp } from '../api/auth'
 import { getMyAccounts, openAccount } from '../api/accounts'
+import { signInWithOAuth } from '../api/oauth'
 
 type Mode = 'login' | 'signup'
 
@@ -145,6 +146,29 @@ export default function AuthPage() {
               'CREATE ACCOUNT'
             )}
           </button>
+
+          {/* OAuth divider */}
+          <div className="flex items-center gap-3 my-1">
+            <div className="flex-1 h-px bg-terminal-border" />
+            <span className="font-mono text-xs text-terminal-muted">OR</span>
+            <div className="flex-1 h-px bg-terminal-border" />
+          </div>
+
+          {/* Social login buttons */}
+          <div className="grid grid-cols-2 gap-2">
+            <OAuthButton
+              provider="google"
+              label="Google"
+              icon="G"
+              onError={setError}
+            />
+            <OAuthButton
+              provider="github"
+              label="GitHub"
+              icon="GH"
+              onError={setError}
+            />
+          </div>
         </form>
 
         {/* Footer */}
@@ -181,5 +205,39 @@ function Field({
         className="terminal-input"
       />
     </div>
+  )
+}
+
+function OAuthButton({
+  provider,
+  label,
+  icon,
+  onError,
+}: {
+  provider: 'google' | 'github'
+  label: string
+  icon: string
+  onError: (msg: string) => void
+}) {
+  const [loading, setLoading] = useState(false)
+  const handleClick = async () => {
+    setLoading(true)
+    try {
+      await signInWithOAuth(provider)
+    } catch (err) {
+      onError(err instanceof Error ? err.message : `${label} 로그인 실패`)
+      setLoading(false)
+    }
+  }
+  return (
+    <button
+      type="button"
+      onClick={handleClick}
+      disabled={loading}
+      className="flex items-center justify-center gap-2 py-2 border border-terminal-border text-terminal-dim hover:text-terminal-text hover:border-terminal-green/40 transition-all rounded-sm font-mono text-xs"
+    >
+      <span className="text-terminal-green font-bold">{icon}</span>
+      {loading ? '...' : label}
+    </button>
   )
 }
