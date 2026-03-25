@@ -5,6 +5,7 @@ import { getAccount, deposit } from '../api/accounts'
 import { getOrderHistory } from '../api/orders'
 import { getPortfolioSummary } from '../api/portfolio'
 import { useOrderFillSse } from '../hooks/useOrderFillSse'
+import { useSimStatus } from '../hooks/useSimStatus'
 import type { OrderResponse, HoldingDetail } from '../types'
 import {
   PieChart,
@@ -32,6 +33,7 @@ export default function DashboardPage() {
   const qc = useQueryClient()
 
   const lastFill = useOrderFillSse(accessToken)
+  const { isSimulation } = useSimStatus()
 
   const [fillToast, setFillToast] = useState<string | null>(null)
 
@@ -117,8 +119,10 @@ export default function DashboardPage() {
           </h2>
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="w-1.5 h-1.5 rounded-full bg-terminal-green animate-pulse" />
-          <span className="font-mono text-xs text-terminal-muted">LIVE</span>
+          <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${isSimulation ? 'bg-terminal-amber' : 'bg-terminal-green'}`} />
+          <span className={`font-mono text-xs ${isSimulation ? 'text-terminal-amber' : 'text-terminal-muted'}`}>
+            {isSimulation ? 'SIM MODE' : 'LIVE'}
+          </span>
         </div>
       </div>
 

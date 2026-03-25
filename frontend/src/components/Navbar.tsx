@@ -1,11 +1,14 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
 import { logout } from '../api/auth'
+import { useSimStatus } from '../hooks/useSimStatus'
 
 export default function Navbar() {
   const location = useLocation()
   const navigate = useNavigate()
   const { isAuthenticated, logout: clearAuth } = useAuthStore()
+
+  const { mode, calibrated } = useSimStatus()
 
   const handleLogout = async () => {
     try {
@@ -57,10 +60,16 @@ export default function Navbar() {
 
         {/* Right side */}
         <div className="flex items-center gap-3">
-          {/* Live indicator */}
+          {/* Mode indicator */}
           <div className="flex items-center gap-1.5">
-            <div className="w-1.5 h-1.5 rounded-full bg-terminal-green animate-pulse" />
-            <span className="font-mono text-xs text-terminal-muted">LIVE</span>
+            <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${
+              mode === 'LIVE' || mode === 'REALTIME' ? 'bg-terminal-green' : 'bg-terminal-amber'
+            }`} />
+            <span className={`font-mono text-xs ${
+              mode === 'LIVE' || mode === 'REALTIME' ? 'text-terminal-muted' : 'text-terminal-amber'
+            }`}>
+              {mode}{mode === 'SIM' && calibrated ? '*' : ''}
+            </span>
           </div>
 
           {isAuthenticated && (
