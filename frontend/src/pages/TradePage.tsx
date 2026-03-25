@@ -1,9 +1,11 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuthStore } from '../store/authStore'
-import { getStock } from '../api/stocks'
+import { getStock, getStockTechnicals } from '../api/stocks'
 import { buyOrder, sellOrder, getPendingOrders, cancelOrder } from '../api/orders'
 import { useStockWebSocket } from '../hooks/useStockWebSocket'
+import StockChart from '../components/StockChart'
+import TechnicalPanel from '../components/TechnicalPanel'
 import type { StockResponse } from '../types'
 
 const POPULAR = ['005930', '000660', '035720', '005380', '051910']
@@ -25,6 +27,7 @@ export default function TradePage() {
   const [limitPrice, setLimitPrice] = useState('')
   const [toast, setToast] = useState<{ msg: string; ok: boolean } | null>(null)
   const [priceFlash, setPriceFlash] = useState<'up' | 'down' | null>(null)
+  const [activeTab, setActiveTab] = useState<'TRADE' | 'ANALYSIS'>('TRADE')
   const prevPriceRef = useRef<number | null>(null)
 
   const showToast = (msg: string, ok: boolean) => {
@@ -40,6 +43,13 @@ export default function TradePage() {
   })
 
   const { priceData, connected } = useStockWebSocket(activeTicker || null)
+
+  const { data: techRes, isFetching: techLoading } = useQuery({
+    queryKey: ['technicals', activeTicker],
+    queryFn: () => getStockTechnicals(activeTicker),
+    enabled: !!activeTicker && activeTab === 'ANALYSIS',
+    staleTime: 5 * 60_000,
+  })
 
   const { data: pendingRes } = useQuery({
     queryKey: ['pending-orders', accountId],
@@ -222,8 +232,52 @@ export default function TradePage() {
             </div>
           )}
 
+          {/* Tab switcher */}
+          {baseStock && !isLoading && (
+            <div className="flex rounded-sm overflow-hidden border border-terminal-border">
+              {(['TRADE', 'ANALYSIS'] as const).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`flex-1 py-2 font-mono text-[10px] uppercase tracking-widest transition-all ${
+                    activeTab === tab
+                      ? 'bg-terminal-border text-terminal-text font-bold'
+                      : 'text-terminal-muted hover:text-terminal-text'
+                  }`}
+                >
+                  {tab === 'ANALYSIS' ? '📊 TECHNICAL ANALYSIS' : '⚡ TRADE'}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Technical Analysis Panel */}
+          {baseStock && activeTab === 'ANALYSIS' && (
+            <div className="space-y-3 animate-fade-in">
+              {techLoading && (
+                <div className="terminal-card p-8 text-center font-mono text-xs text-terminal-muted animate-pulse">
+                  LOADING ANALYSIS<span className="animate-blink">_</span>
+                </div>
+              )}
+              {techRes?.data && !techLoading && (
+                <>
+                  <StockChart
+                    history={techRes.data.history}
+                    technicals={techRes.data.technicals}
+                  />
+                  <TechnicalPanel
+                    history={techRes.data.history}
+                    technicals={techRes.data.technicals}
+                    annualizedVolatility={techRes.data.annualizedVolatility}
+                    annualizedReturn={techRes.data.annualizedReturn}
+                  />
+                </>
+              )}
+            </div>
+          )}
+
           {/* Pending orders */}
-          {pendingOrders.length > 0 && (
+          {activeTab === 'TRADE' && pendingOrders.length > 0 && (
             <div className="terminal-card">
               <div className="border-b border-terminal-border px-4 py-2.5 flex items-center justify-between">
                 <span className="label-tag">PENDING ORDERS</span>
