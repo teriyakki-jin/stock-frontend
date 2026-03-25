@@ -90,3 +90,40 @@ export interface PageResponse<T> {
   size: number
   number: number
 }
+
+export interface OhlcvBar {
+  date: string
+  open: number
+  high: number
+  low: number
+  close: number
+  volume: number
+}
+
+export interface TechnicalData {
+  rsi: number
+  macd: number
+  macdSignal: number
+  macdHistogram: number
+  bbUpper: number
+  bbMiddle: number
+  bbLower: number
+  signal: 'BUY' | 'SELL' | 'NEUTRAL'
+}
+
+export interface StockTechnicalResponse {
+  ticker: string
+  name: string
+  history: OhlcvBar[]
+  technicals: TechnicalData
+  annualizedVolatility: number
+  annualizedReturn: number
+}
+
+export interface SimStatus {
+  simulation: boolean
+  marketOpen: boolean
+  calibrated: boolean
+  mode: 'LIVE' | 'REALTIME' | 'SIM'
+  interval: number
+}
