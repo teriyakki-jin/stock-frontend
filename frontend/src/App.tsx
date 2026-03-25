@@ -7,6 +7,7 @@ import DashboardPage from './pages/DashboardPage'
 import TradePage from './pages/TradePage'
 import RankingPage from './pages/RankingPage'
 import ProfilePage from './pages/ProfilePage'
+import AiReportPage from './pages/AiReportPage'
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthStore()
@@ -46,6 +47,15 @@ export default function App() {
         element={
           <PrivateRoute>
             <Layout><ProfilePage /></Layout>
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/ai-report"
+        element={
+          <PrivateRoute>
+            <Layout><AiReportPage /></Layout>
           </PrivateRoute>
         }
       />

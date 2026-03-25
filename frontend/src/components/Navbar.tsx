@@ -55,6 +55,7 @@ export default function Navbar() {
           {isAuthenticated && navLink('/dashboard', 'OVERVIEW')}
           {isAuthenticated && navLink('/trade', 'TRADE')}
           {navLink('/ranking', 'RANKING')}
+          {isAuthenticated && navLink('/ai-report', 'AI REPORT')}
           {isAuthenticated && navLink('/profile', 'PROFILE')}
         </nav>
 
