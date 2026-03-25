@@ -128,6 +128,30 @@ export interface SimStatus {
   interval: number
 }
 
+// ─── Portfolio Analysis ───────────────────────────────────
+
+export interface SectorWeight {
+  sector: string
+  evaluatedAmount: number
+  weightPct: number
+}
+
+export interface PnlPoint {
+  date: string
+  cumulativePnl: number
+  cumulativeRate: number
+}
+
+export interface PortfolioAnalysis {
+  winRate: number
+  mdd: number
+  totalTrades: number
+  profitTrades: number
+  lossTrades: number
+  sectorWeights: SectorWeight[]
+  pnlCurve: PnlPoint[]
+}
+
 // ─── Ranking ──────────────────────────────────────────────
 
 export type RankingPeriod = 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'ALL_TIME'

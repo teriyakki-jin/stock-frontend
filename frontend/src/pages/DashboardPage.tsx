@@ -4,6 +4,7 @@ import { useAuthStore } from '../store/authStore'
 import { getAccount, deposit } from '../api/accounts'
 import { getOrderHistory } from '../api/orders'
 import { getPortfolioSummary } from '../api/portfolio'
+import PortfolioAnalysisPanel from '../components/PortfolioAnalysisPanel'
 import { useOrderFillSse } from '../hooks/useOrderFillSse'
 import { useSimStatus } from '../hooks/useSimStatus'
 import type { OrderResponse, HoldingDetail } from '../types'
@@ -321,6 +322,18 @@ export default function DashboardPage() {
           </table>
         )}
       </div>
+
+      {/* Portfolio Analysis */}
+      {accountId && (
+        <div className="terminal-card">
+          <div className="border-b border-terminal-border px-4 py-2.5">
+            <span className="label-tag">PORTFOLIO ANALYSIS</span>
+          </div>
+          <div className="p-4">
+            <PortfolioAnalysisPanel accountId={accountId} />
+          </div>
+        </div>
+      )}
 
       {/* Deposit + Order history */}
       <div className="grid grid-cols-5 gap-4">
