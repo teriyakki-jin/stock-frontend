@@ -12,7 +12,10 @@ export function usePendingAlerts(onAlert: (msg: string) => void) {
 
   const { data } = useQuery({
     queryKey: ['alerts-pending', accountId],
-    queryFn: () => (accountId ? getPendingAlerts(accountId) : Promise.resolve({ data: [] })),
+    queryFn: (): ReturnType<typeof getPendingAlerts> =>
+      accountId
+        ? getPendingAlerts(accountId)
+        : Promise.resolve({ success: true, message: 'OK', data: [] }),
     enabled: !!accountId,
     refetchInterval: 10_000,
     staleTime: 0,

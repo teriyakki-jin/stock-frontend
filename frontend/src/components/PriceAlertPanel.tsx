@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { z } from 'zod'
 import {
   createAlert,
   getAlerts,
@@ -14,6 +15,13 @@ interface Props {
   currentPrice?: number
 }
 
+const alertSchema = z.object({
+  targetPrice: z
+    .number()
+    .positive('0보다 큰 값을 입력하세요')
+    .finite('유효한 숫자를 입력하세요'),
+})
+
 const COND_LABEL: Record<AlertCondition, string> = {
   GTE: '이상 ▲',
   LTE: '이하 ▼',
@@ -27,6 +35,7 @@ export default function PriceAlertPanel({ accountId, ticker, currentPrice }: Pro
   const qc = useQueryClient()
   const [targetPrice, setTargetPrice] = useState(currentPrice ? String(currentPrice) : '')
   const [condition, setCondition] = useState<AlertCondition>('GTE')
+  const [validationError, setValidationError] = useState<string | null>(null)
 
   const { data: alertsRes } = useQuery({
     queryKey: ['alerts', accountId],
@@ -37,15 +46,16 @@ export default function PriceAlertPanel({ accountId, ticker, currentPrice }: Pro
   const alerts = (alertsRes?.data ?? []).filter((a) => a.ticker === ticker)
 
   const createMut = useMutation({
-    mutationFn: () =>
+    mutationFn: (price: number) =>
       createAlert(accountId, {
         ticker,
-        targetPrice: Number(targetPrice),
+        targetPrice: price,
         condition,
       }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['alerts', accountId] })
       setTargetPrice(currentPrice ? String(currentPrice) : '')
+      setValidationError(null)
     },
   })
 
@@ -55,9 +65,13 @@ export default function PriceAlertPanel({ accountId, ticker, currentPrice }: Pro
   })
 
   const handleCreate = () => {
-    const price = Number(targetPrice)
-    if (!price || price <= 0) return
-    createMut.mutate()
+    const parsed = alertSchema.safeParse({ targetPrice: Number(targetPrice) })
+    if (!parsed.success) {
+      setValidationError(parsed.error.issues[0]?.message ?? '입력값을 확인하세요')
+      return
+    }
+    setValidationError(null)
+    createMut.mutate(parsed.data.targetPrice)
   }
 
   const statusBadge = (alert: PriceAlertResponse) => {
@@ -113,6 +127,13 @@ export default function PriceAlertPanel({ accountId, ticker, currentPrice }: Pro
           {createMut.isPending ? '...' : '등록'}
         </button>
       </div>
+
+      {/* 유효성 에러 */}
+      {validationError && (
+        <div className="font-mono text-xs text-terminal-red mb-2">
+          ⚠ {validationError}
+        </div>
+      )}
 
       {/* 현재가 힌트 */}
       {currentPrice && (
