@@ -4,8 +4,10 @@ import { useAuthStore } from '../store/authStore'
 import { getStock, getStockTechnicals } from '../api/stocks'
 import { buyOrder, sellOrder, getPendingOrders, cancelOrder } from '../api/orders'
 import { useStockWebSocket } from '../hooks/useStockWebSocket'
+import { usePendingAlerts } from '../hooks/usePendingAlerts'
 import StockChart from '../components/StockChart'
 import TechnicalPanel from '../components/TechnicalPanel'
+import PriceAlertPanel from '../components/PriceAlertPanel'
 import type { StockResponse } from '../types'
 
 const POPULAR = ['005930', '000660', '035720', '005380', '051910']
@@ -27,13 +29,15 @@ export default function TradePage() {
   const [limitPrice, setLimitPrice] = useState('')
   const [toast, setToast] = useState<{ msg: string; ok: boolean } | null>(null)
   const [priceFlash, setPriceFlash] = useState<'up' | 'down' | null>(null)
-  const [activeTab, setActiveTab] = useState<'TRADE' | 'ANALYSIS'>('TRADE')
+  const [activeTab, setActiveTab] = useState<'TRADE' | 'ANALYSIS' | 'ALERTS'>('TRADE')
   const prevPriceRef = useRef<number | null>(null)
 
-  const showToast = (msg: string, ok: boolean) => {
+  const showToast = (msg: string, ok = true) => {
     setToast({ msg, ok })
     setTimeout(() => setToast(null), 3500)
   }
+
+  usePendingAlerts((msg) => showToast(msg, true))
 
   const { data: stockRes, isLoading, error } = useQuery({
     queryKey: ['stock', activeTicker],
@@ -235,7 +239,7 @@ export default function TradePage() {
           {/* Tab switcher */}
           {baseStock && !isLoading && (
             <div className="flex rounded-sm overflow-hidden border border-terminal-border">
-              {(['TRADE', 'ANALYSIS'] as const).map((tab) => (
+              {(['TRADE', 'ANALYSIS', 'ALERTS'] as const).map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
@@ -245,9 +249,20 @@ export default function TradePage() {
                       : 'text-terminal-muted hover:text-terminal-text'
                   }`}
                 >
-                  {tab === 'ANALYSIS' ? '📊 TECHNICAL ANALYSIS' : '⚡ TRADE'}
+                  {tab === 'ANALYSIS' ? '📊 ANALYSIS' : tab === 'ALERTS' ? '🔔 ALERTS' : '⚡ TRADE'}
                 </button>
               ))}
+            </div>
+          )}
+
+          {/* Price Alert Panel */}
+          {baseStock && activeTab === 'ALERTS' && accountId && (
+            <div className="animate-fade-in">
+              <PriceAlertPanel
+                accountId={accountId}
+                ticker={activeTicker}
+                currentPrice={priceData?.price ?? baseStock.currentPrice}
+              />
             </div>
           )}
 
